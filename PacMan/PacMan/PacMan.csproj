@@ -48,12 +48,13 @@
     <Compile Include="Enum.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Graph.cs" />
+    <Compile Include="Inky.cs" />
     <Compile Include="MinHeapTree.cs" />
     <Compile Include="Pacman.cs" />
     <Compile Include="Pinky.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sprite.cs" />
+    <Compile Include="BaseGameSprite.cs" />
     <Compile Include="Vertex.cs" />
   </ItemGroup>
   <ItemGroup>

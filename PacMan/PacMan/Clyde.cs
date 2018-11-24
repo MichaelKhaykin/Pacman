@@ -8,14 +8,14 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace PacMan
 {
-    public class Clyde : Sprite
+    public class Clyde : BaseGameSprite
     {
         Graph Map;
 
         public Clyde(Texture2D texture, Vector2 position, Color color, Vector2 scale, Graph map) 
             : base(texture, position, color, scale)
         {
-            UpdateTime = TimeSpan.FromMilliseconds(150);
+            UpdateTime = TimeSpan.FromMilliseconds(250);
             Map = map;
         }
 
@@ -29,7 +29,7 @@ namespace PacMan
             }
 
             //if you're more than 8 tiles away
-            if(Math.Abs(Game1.pac.Position.X - Position.X) / 40 >= 7 || Math.Abs(Game1.pac.Position.Y - Position.Y) / 40 >= 7)
+            if(Math.Abs(Game1.pac.Position.X - Position.X) / 40 >= 9 || Math.Abs(Game1.pac.Position.Y - Position.Y) / 40 >= 9)
             {
                 if (Position != Game1.pac.Position)
                 {
@@ -40,7 +40,7 @@ namespace PacMan
                     //is the start position, which is were we are already
                     path.Pop();
                     var goalPos = path.Pop().Value;
-                    if (goalPos != Game1.pinky.Position && goalPos != Game1.blinky.Position)
+                    if (goalPos != Game1.pinky.Position && goalPos != Game1.blinky.Position && goalPos != Game1.Inky.Position)
                     {
                         Position = goalPos;
                     }

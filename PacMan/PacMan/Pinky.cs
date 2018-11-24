@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace PacMan
 {
-    public class Pinky : Sprite
+    public class Pinky : BaseGameSprite
     {
         Graph Map;
 
@@ -16,7 +16,7 @@ namespace PacMan
             : base(texture, position, color, scale)
         {
             Map = map;
-            UpdateTime = TimeSpan.FromMilliseconds(150);
+            UpdateTime = TimeSpan.FromMilliseconds(250);
         }
 
         public override void Update(GameTime gameTime)
@@ -39,7 +39,7 @@ namespace PacMan
                 {
                     //So they dont overlap with any other ghost
                     var goalPos = path.Pop().Value;
-                    if (goalPos != Game1.blinky.Position && goalPos != Game1.Clyde.Position)
+                    if (goalPos != Game1.blinky.Position && goalPos != Game1.Clyde.Position && goalPos != Game1.Inky.Position)
                     {
                         Position = goalPos;
                     }

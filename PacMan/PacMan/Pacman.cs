@@ -6,10 +6,15 @@ using System.Collections.Generic;
 
 namespace PacMan
 {
-    public class Pacman : Sprite
+    public class Pacman : BaseGameSprite
     {
-        Dictionary<Keys, Action<GameTime>> Movements;
-        
+        public bool IsPowerActivated = false;
+
+        private TimeSpan PowerTime;
+        private TimeSpan elapsedPowerTime;
+
+        Dictionary<Keys, Action<List<BaseGameSprite>>> Movements;
+
         public Directions Direction;
 
         private List<Rectangle> Frames = new List<Rectangle>();
@@ -35,15 +40,30 @@ namespace PacMan
             }
         }
 
-        public Pacman(Texture2D texture, Vector2 position, Color color, Vector2 scale)
+        private SpriteFont font;
+
+        private bool canMoveLeft;
+        private bool canMoveRight;
+        private bool canMoveUp;
+        private bool canMoveDown;
+        private Keys lastKeyPressed;
+
+        public Pacman(Texture2D texture, Vector2 position, Color color, Vector2 scale, SpriteFont font)
             : base(texture, position, color, scale)
         {
-            Movements = new Dictionary<Keys, Action<GameTime>>()
+            this.font = font;
+
+            Movements = new Dictionary<Keys, Action<List<BaseGameSprite>>>()
             {
-                [Keys.W] = new Action<GameTime>((gameTime) => Direction = Directions.Up),
-                [Keys.S] = new Action<GameTime>((gameTime) => Direction = Directions.Down),
-                [Keys.D] = new Action<GameTime>((gameTime) => Direction = Directions.Right),
-                [Keys.A] = new Action<GameTime>((gameTime) => Direction = Directions.Left)
+                [Keys.W] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X, Position.Y - moveAmount), ref canMoveUp, Directions.Up)),
+                [Keys.S] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X, Position.Y + moveAmount), ref canMoveDown, Directions.Down)),
+                [Keys.D] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X + moveAmount, Position.Y), ref canMoveRight, Directions.Right)),
+                [Keys.A] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X - moveAmount, Position.Y), ref canMoveLeft, Directions.Left)),
+
+                [Keys.Up] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X, Position.Y - moveAmount), ref canMoveUp, Directions.Up)),
+                [Keys.Down] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X, Position.Y + moveAmount), ref canMoveDown, Directions.Down)),
+                [Keys.Right] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X + moveAmount, Position.Y), ref canMoveRight, Directions.Right)),
+                [Keys.Left] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X - moveAmount, Position.Y), ref canMoveLeft, Directions.Left)),
             };
 
             Direction = Directions.None;
@@ -56,18 +76,50 @@ namespace PacMan
             };
 
             elapsedTimePerFrame = TimeSpan.Zero;
-            timePerFrame = TimeSpan.FromMilliseconds(150);
-            
+            timePerFrame = TimeSpan.FromMilliseconds(75);
+
+            PowerTime = TimeSpan.FromSeconds(2);
+            elapsedPowerTime = TimeSpan.Zero;
+        }
+
+        private void Move(List<BaseGameSprite> walls, Vector2 pointToCheck, ref bool booleanToSet, Directions directionToSet)
+        {
+            bool shouldSetNewDirection = true;
+            foreach (var wall in walls)
+            {
+                if (wall.HitBox.Contains(pointToCheck))
+                {
+                    shouldSetNewDirection = false;
+                }
+            }
+
+            if (shouldSetNewDirection)
+            {
+                Direction = directionToSet;
+            }
+
+            booleanToSet = shouldSetNewDirection;
         }
         
-        public void Update(GameTime gameTime, List<Sprite> walls, GraphicsDevice graphicsDevice)
+        public void Update(GameTime gameTime, List<BaseGameSprite> walls, GraphicsDevice graphicsDevice)
         {
             //IMPORTANT
             //THIS HAS TO RUN FIRST
             base.Update(gameTime);
 
             elapsedTimePerFrame += gameTime.ElapsedGameTime;
-            
+
+            if (IsPowerActivated)
+            {
+                elapsedPowerTime += gameTime.ElapsedGameTime;
+            }
+
+            if (elapsedPowerTime >= PowerTime)
+            {
+                elapsedPowerTime = TimeSpan.Zero;
+                IsPowerActivated = false;
+            }
+
             if (elapsedTimePerFrame >= timePerFrame)
             {
                 currentIndex++;
@@ -84,58 +136,29 @@ namespace PacMan
 
             if (pressedKeys.Length > 0)
             {
-                var lastKeyPress = pressedKeys[pressedKeys.Length - 1];
-
-                if (Movements.ContainsKey(lastKeyPress))
-                {
-                    Movements[lastKeyPress](gameTime);
-                }
+                lastKeyPressed = pressedKeys[pressedKeys.Length - 1];   
             }
 
-            if(!HasElapsedTimePassed)
+            if (Movements.ContainsKey(lastKeyPressed))
+            {
+                Movements[lastKeyPressed](walls);
+            }
+
+            if (!HasElapsedTimePassed)
             {
                 return;
             }
-            
+
             //TELEPORT CHECK
-            if(Position.X + HitBox.Width >= graphicsDevice.Viewport.Width)
+            if (Position.X + HitBox.Width >= graphicsDevice.Viewport.Width)
             {
                 Position.X = 0 + HitBox.Width;
             }
-            else if(Position.X <= 0)
+            else if (Position.X <= 0)
             {
                 Position.X = graphicsDevice.Viewport.Width - HitBox.Width;
             }
 
-            var projectedUpPosition = new Vector2(Position.X, Position.Y - moveAmount);
-            var projectedDownPosition = new Vector2(Position.X, Position.Y + moveAmount);
-            var projectedRightPosition = new Vector2(Position.X + moveAmount, Position.Y);
-            var projectedLeftPosition = new Vector2(Position.X - moveAmount, Position.Y);
-
-            bool canMoveLeft = true;
-            bool canMoveRight = true;
-            bool canMoveUp = true;
-            bool canMoveDown = true;
-
-            foreach(var wall in walls)
-            {
-                if(wall.HitBox.Contains(projectedUpPosition))
-                {
-                    canMoveUp = false;
-                }
-                if(wall.HitBox.Contains(projectedDownPosition))
-                {
-                    canMoveDown = false;
-                }
-                if(wall.HitBox.Contains(projectedLeftPosition))
-                {
-                    canMoveLeft = false;
-                }
-                if(wall.HitBox.Contains(projectedRightPosition))
-                {
-                    canMoveRight = false;
-                }
-            }
 
             switch (Direction)
             {
@@ -159,7 +182,7 @@ namespace PacMan
                     break;
 
                 case Directions.Right:
-                    if(canMoveRight)
+                    if (canMoveRight)
                     {
                         Rotation = 0;
                         Position.X += moveAmount;
@@ -179,7 +202,12 @@ namespace PacMan
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(Texture, Position + Origin, Frames[currentIndex], Color, Rotation, Origin, Scale, SpriteEffects.None, 0f);
+            sb.DrawString(font, $"X:{Position.X},Y:{Position.Y}", new Vector2(120, 120), Color.Red);
+
+            if (IsPowerActivated)
+            {
+                sb.DrawString(font, $"TimeLeft:{PowerTime - elapsedPowerTime}", new Vector2(0, 0), Color.Red);
+            }
         }
     }
 }
- 
