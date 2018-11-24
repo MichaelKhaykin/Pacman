@@ -13,7 +13,7 @@ namespace PacMan
         private TimeSpan PowerTime;
         private TimeSpan elapsedPowerTime;
 
-        Dictionary<Keys, Action<List<BaseGameSprite>>> Movements;
+        Dictionary<Keys, Func<List<BaseGameSprite>, bool>> Movements;
 
         public Directions Direction;
 
@@ -46,24 +46,24 @@ namespace PacMan
         private bool canMoveRight;
         private bool canMoveUp;
         private bool canMoveDown;
-        private Keys lastKeyPressed;
+        private Keys lastValidKeyPressed;
 
         public Pacman(Texture2D texture, Vector2 position, Color color, Vector2 scale, SpriteFont font)
             : base(texture, position, color, scale)
         {
             this.font = font;
 
-            Movements = new Dictionary<Keys, Action<List<BaseGameSprite>>>()
+            Movements = new Dictionary<Keys, Func<List<BaseGameSprite>, bool>>()
             {
-                [Keys.W] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X, Position.Y - moveAmount), ref canMoveUp, Directions.Up)),
-                [Keys.S] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X, Position.Y + moveAmount), ref canMoveDown, Directions.Down)),
-                [Keys.D] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X + moveAmount, Position.Y), ref canMoveRight, Directions.Right)),
-                [Keys.A] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X - moveAmount, Position.Y), ref canMoveLeft, Directions.Left)),
+                [Keys.W] = (walls) => Move(walls, new Vector2(Position.X, Position.Y - moveAmount), ref canMoveUp, Directions.Up),
+                [Keys.S] = (walls) => Move(walls, new Vector2(Position.X, Position.Y + moveAmount), ref canMoveDown, Directions.Down),
+                [Keys.D] = (walls) => Move(walls, new Vector2(Position.X + moveAmount, Position.Y), ref canMoveRight, Directions.Right),
+                [Keys.A] = (walls) => Move(walls, new Vector2(Position.X - moveAmount, Position.Y), ref canMoveLeft, Directions.Left),
 
-                [Keys.Up] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X, Position.Y - moveAmount), ref canMoveUp, Directions.Up)),
-                [Keys.Down] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X, Position.Y + moveAmount), ref canMoveDown, Directions.Down)),
-                [Keys.Right] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X + moveAmount, Position.Y), ref canMoveRight, Directions.Right)),
-                [Keys.Left] = new Action<List<BaseGameSprite>>((walls) => Move(walls, new Vector2(Position.X - moveAmount, Position.Y), ref canMoveLeft, Directions.Left)),
+                [Keys.Up] = (walls) => Move(walls, new Vector2(Position.X, Position.Y - moveAmount), ref canMoveUp, Directions.Up),
+                [Keys.Down] = (walls) => Move(walls, new Vector2(Position.X, Position.Y + moveAmount), ref canMoveDown, Directions.Down),
+                [Keys.Right] = (walls) => Move(walls, new Vector2(Position.X + moveAmount, Position.Y), ref canMoveRight, Directions.Right),
+                [Keys.Left] = (walls) => Move(walls, new Vector2(Position.X - moveAmount, Position.Y), ref canMoveLeft, Directions.Left),
             };
 
             Direction = Directions.None;
@@ -78,11 +78,11 @@ namespace PacMan
             elapsedTimePerFrame = TimeSpan.Zero;
             timePerFrame = TimeSpan.FromMilliseconds(75);
 
-            PowerTime = TimeSpan.FromSeconds(2);
+            PowerTime = TimeSpan.FromSeconds(10);
             elapsedPowerTime = TimeSpan.Zero;
         }
 
-        private void Move(List<BaseGameSprite> walls, Vector2 pointToCheck, ref bool booleanToSet, Directions directionToSet)
+        private bool Move(List<BaseGameSprite> walls, Vector2 pointToCheck, ref bool booleanToSet, Directions directionToSet)
         {
             bool shouldSetNewDirection = true;
             foreach (var wall in walls)
@@ -99,6 +99,7 @@ namespace PacMan
             }
 
             booleanToSet = shouldSetNewDirection;
+            return shouldSetNewDirection;
         }
         
         public void Update(GameTime gameTime, List<BaseGameSprite> walls, GraphicsDevice graphicsDevice)
@@ -136,19 +137,25 @@ namespace PacMan
 
             if (pressedKeys.Length > 0)
             {
-                lastKeyPressed = pressedKeys[pressedKeys.Length - 1];   
+                var lastKeyPressed = pressedKeys[pressedKeys.Length - 1];
+
+                if (Movements.ContainsKey(lastKeyPressed))
+                {
+                    if (Movements[lastKeyPressed](walls))
+                    {
+                        lastValidKeyPressed = lastKeyPressed;
+                    }
+                }
             }
 
-            if (Movements.ContainsKey(lastKeyPressed))
-            {
-                Movements[lastKeyPressed](walls);
-            }
+            Movements[lastValidKeyPressed](walls);
 
             if (!HasElapsedTimePassed)
             {
                 return;
             }
 
+            
             //TELEPORT CHECK
             if (Position.X + HitBox.Width >= graphicsDevice.Viewport.Width)
             {
