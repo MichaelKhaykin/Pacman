@@ -28,7 +28,7 @@ namespace PacMan
                 return;
             }
 
-            if (Position != Game1.pac.Position)
+            if (Position != GameScreen.pac.Position)
             {
                 var startVertex = Map.FindVertex(Position);
 
@@ -37,7 +37,7 @@ namespace PacMan
                     throw new Exception("Something went terribly wrong");
                 }
 
-                var targetVertex = Map.FindVertex(Game1.pac.Position);
+                var targetVertex = Map.FindVertex(GameScreen.pac.Position);
 
                 if(targetVertex == null)
                 {
@@ -49,7 +49,7 @@ namespace PacMan
                 //is the start position, which is were we are already
                 path.Pop();
                 var goalPos = path.Pop().Value;
-                if (goalPos != Game1.pinky.Position && goalPos != Game1.Clyde.Position && goalPos != Game1.Inky.Position)
+                if (goalPos != GameScreen.pinky.Position && goalPos != GameScreen.Clyde.Position && goalPos != GameScreen.Inky.Position)
                 {
                     Position = goalPos;
                 }

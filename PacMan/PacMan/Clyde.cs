@@ -29,18 +29,18 @@ namespace PacMan
             }
 
             //if you're more than 8 tiles away
-            if(Math.Abs(Game1.pac.Position.X - Position.X) / 40 >= 9 || Math.Abs(Game1.pac.Position.Y - Position.Y) / 40 >= 9)
+            if(Math.Abs(GameScreen.pac.Position.X - Position.X) / 40 >= 9 || Math.Abs(GameScreen.pac.Position.Y - Position.Y) / 40 >= 9)
             {
-                if (Position != Game1.pac.Position)
+                if (Position != GameScreen.pac.Position)
                 {
                     var startVertex = Map.FindVertex(Position);
-                    var targetVertex = Map.FindVertex(Game1.pac.Position);
+                    var targetVertex = Map.FindVertex(GameScreen.pac.Position);
                     var path = Map.AStar(startVertex, targetVertex);
                     //We pop right here because the first vertex in the stack
                     //is the start position, which is were we are already
                     path.Pop();
                     var goalPos = path.Pop().Value;
-                    if (goalPos != Game1.pinky.Position && goalPos != Game1.blinky.Position && goalPos != Game1.Inky.Position)
+                    if (goalPos != GameScreen.pinky.Position && goalPos != GameScreen.blinky.Position && goalPos != GameScreen.Inky.Position)
                     {
                         Position = goalPos;
                     }
@@ -49,8 +49,8 @@ namespace PacMan
             else
             {
                 //Everything is the same size so the pacman is also the grid cell size
-                var gridHeight = Game1.pac.HitBox.Width;
-                var gridWidth = Game1.pac.HitBox.Height;
+                var gridHeight = GameScreen.pac.HitBox.Width;
+                var gridWidth = GameScreen.pac.HitBox.Height;
                 switch ((Directions)Game1.Rand.Next(0, 4))
                 {
                     case Directions.Up:

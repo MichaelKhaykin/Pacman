@@ -14,4 +14,13 @@ namespace PacMan
         Left = 3,
         None
     }
+
+    public enum States
+    {
+        Login,
+        SkinSelection,
+        Play,
+        Lose,
+        Win
+    }
 }

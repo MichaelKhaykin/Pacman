@@ -28,16 +28,16 @@ namespace PacMan
                 return;
             }
 
-            if (Position != Game1.pac.Position)
+            if (Position != GameScreen.pac.Position)
             {
                 var startVertex = Map.FindVertex(Position);
-                var targetVertex = Map.FindVertex(Game1.pac.Position);
+                var targetVertex = Map.FindVertex(GameScreen.pac.Position);
                 var path = Map.AStar(startVertex, targetVertex);
                 //We pop right here because the first vertex in the stack
                 //is the start position, which is were we are already
                 path.Pop();
                 var goalPos = path.Pop().Value;
-                if (goalPos != Game1.pinky.Position && goalPos != Game1.Clyde.Position && goalPos != Game1.blinky.Position)
+                if (goalPos != GameScreen.pinky.Position && goalPos != GameScreen.Clyde.Position && goalPos != GameScreen.blinky.Position)
                 {
                     Position = goalPos;
                 }

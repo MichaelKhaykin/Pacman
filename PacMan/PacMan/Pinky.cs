@@ -31,7 +31,7 @@ namespace PacMan
                 return;
             }
 
-            if (Position != Game1.pac.Position)
+            if (Position != GameScreen.pac.Position)
             {
                 var path = Map.AStar(startingVertex, endingVertex);
                 path.Pop();
@@ -39,7 +39,7 @@ namespace PacMan
                 {
                     //So they dont overlap with any other ghost
                     var goalPos = path.Pop().Value;
-                    if (goalPos != Game1.blinky.Position && goalPos != Game1.Clyde.Position && goalPos != Game1.Inky.Position)
+                    if (goalPos != GameScreen.blinky.Position && goalPos != GameScreen.Clyde.Position && goalPos != GameScreen.Inky.Position)
                     {
                         Position = goalPos;
                     }
@@ -49,27 +49,27 @@ namespace PacMan
 
         private Vector2 FindPositionBasedOffDirection()
         {
-            Vector2 newVector = Game1.pac.Position;
+            Vector2 newVector = GameScreen.pac.Position;
             
             int curr = 6;
             do
             {
-                switch (Game1.pac.Direction)
+                switch (GameScreen.pac.Direction)
                 {
                     case Directions.None:
                         break;
 
                     case Directions.Up:
-                        newVector.Y -= Game1.pac.HitBox.Height * curr;
+                        newVector.Y -= GameScreen.pac.HitBox.Height * curr;
                         break;
                     case Directions.Down:
-                        newVector.Y += Game1.pac.HitBox.Height * curr;
+                        newVector.Y += GameScreen.pac.HitBox.Height * curr;
                         break;
                     case Directions.Right:
-                        newVector.X += Game1.pac.HitBox.Width * curr;
+                        newVector.X += GameScreen.pac.HitBox.Width * curr;
                         break;
                     case Directions.Left:
-                        newVector.X -= Game1.pac.HitBox.Width * curr;
+                        newVector.X -= GameScreen.pac.HitBox.Width * curr;
                         break;
                 }
                 curr--;

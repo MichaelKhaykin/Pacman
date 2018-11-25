@@ -47,21 +47,30 @@
     <Compile Include="Edge.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameScreen.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="Inky.cs" />
+    <Compile Include="LoginScreen.cs" />
     <Compile Include="MinHeapTree.cs" />
     <Compile Include="Pacman.cs" />
     <Compile Include="Pinky.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseGameSprite.cs" />
+    <Compile Include="Skin.cs" />
+    <Compile Include="SkinsScreen.cs" />
+    <Compile Include="UserData.cs" />
     <Compile Include="Vertex.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="MichaelLibrary">
+      <HintPath>..\..\..\..\Documents\Visual Studio 2015\Projects\MichaelLibrary\MichaelLibrary\bin\Debug\MichaelLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
