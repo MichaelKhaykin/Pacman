@@ -38,7 +38,7 @@ namespace PacMan
 
         List<BaseGameSprite> PowerUps = new List<BaseGameSprite>();
 
-        Color screenTint = Color.Black;
+        Color screenTint = Color.Gray * 0.5f;
 
         public Game1()
         {
@@ -130,7 +130,7 @@ namespace PacMan
                     {
                         Hearts.Add(new BaseGameSprite(heartTexture, new Vector2(x, 0), Color.White, Vector2.One));
                     }
-                    Walls.Add(new BaseGameSprite(square, new Vector2(x, y), Color.Blue, Vector2.One));
+                    Walls.Add(new BaseGameSprite(square, new Vector2(x, y), Color.Black, Vector2.One));
                     continue;
                 }
 
@@ -257,12 +257,7 @@ namespace PacMan
                 Clyde.Update(gameTime);
                 Inky.Update(gameTime);
 
-
-                if(!pac.IsPowerActivated)
-                {
-                    screenTint = Color.Black;
-                }
-
+                
                 foreach (var ghost in Ghosts)
                 {
                     if (pac.HitBox.Contains(ghost.HitBox) && !pac.IsPowerActivated)
@@ -291,11 +286,11 @@ namespace PacMan
                 if (PowerUps[i].HitBox.Contains(pac.HitBox))
                 {
                     //able to kill
+                    pac.elapsedPowerTime = TimeSpan.Zero;
                     pac.IsPowerActivated = true;
                     PowerUps.RemoveAt(i);
                     i--;
-                    screenTint = Color.Gray;
-                }
+                 }
             }
 
             base.Update(gameTime);
@@ -303,7 +298,7 @@ namespace PacMan
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(screenTint);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
 
@@ -357,6 +352,17 @@ namespace PacMan
             Clyde.Draw(spriteBatch);
             Inky.Draw(spriteBatch);
 
+            if (pac.IsPowerActivated)
+            {
+                if (pac.elapsedPowerTime >= TimeSpan.FromSeconds(8))
+                {
+                    spriteBatch.Draw(pixel, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.Red * 0.5f);
+                }
+                else
+                {
+                    spriteBatch.Draw(pixel, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), screenTint);
+                }
+            }
 
             spriteBatch.End();
 

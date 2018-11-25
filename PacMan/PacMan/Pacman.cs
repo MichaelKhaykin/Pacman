@@ -11,7 +11,7 @@ namespace PacMan
         public bool IsPowerActivated = false;
 
         private TimeSpan PowerTime;
-        private TimeSpan elapsedPowerTime;
+        public TimeSpan elapsedPowerTime;
 
         Dictionary<Keys, Func<List<BaseGameSprite>, bool>> Movements;
 
@@ -209,12 +209,6 @@ namespace PacMan
         public override void Draw(SpriteBatch sb)
         {
             sb.Draw(Texture, Position + Origin, Frames[currentIndex], Color, Rotation, Origin, Scale, SpriteEffects.None, 0f);
-            sb.DrawString(font, $"X:{Position.X},Y:{Position.Y}", new Vector2(120, 120), Color.Red);
-
-            if (IsPowerActivated)
-            {
-                sb.DrawString(font, $"TimeLeft:{PowerTime - elapsedPowerTime}", new Vector2(0, 0), Color.Red);
-            }
         }
     }
 }
