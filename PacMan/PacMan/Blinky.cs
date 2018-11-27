@@ -32,17 +32,7 @@ namespace PacMan
             {
                 var startVertex = Map.FindVertex(Position);
 
-                if(startVertex == null)
-                {
-                    throw new Exception("Something went terribly wrong");
-                }
-
                 var targetVertex = Map.FindVertex(GameScreen.pac.Position);
-
-                if(targetVertex == null)
-                {
-                    throw new Exception("PacMan is in a wall?");
-                }
 
                 var path = Map.AStar(startVertex, targetVertex);
                 //We pop right here because the first vertex in the stack

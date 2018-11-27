@@ -11,23 +11,29 @@ namespace PacMan
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Point mouse;
-
+      
         public static Random Rand = new Random();
 
         Color screenTint = Color.Gray * 0.5f;
 
-        Dictionary<States, Screen> Screens = new Dictionary<States, Screen>();
+        public static Dictionary<States, Screen> Screens = new Dictionary<States, Screen>();
         public static States CurrentState;
 
         public static string ConnectionString;
 
         public static UserData CurrentUserData;
-        
+
+        public static MouseState Mouse;
+
+        public static MouseState OldMouse;
+
+        public static bool DidWin;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
         protected override void Initialize()
@@ -53,19 +59,20 @@ namespace PacMan
             CurrentState = States.Login;
 
             Screens.Add(States.Login, new LoginScreen(GraphicsDevice, Content));
-            Screens.Add(States.SkinSelection, new SkinsScreen(GraphicsDevice, Content));
-            Screens.Add(States.Play, new GameScreen(GraphicsDevice, Content));
-
+            
             // TODO: use this.Content to load your game content here
         }
 
         protected override void Update(GameTime gameTime)
         {
-            mouse = Mouse.GetState().Position;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            Mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
+
             Screens[CurrentState].Update(gameTime);
+
+            OldMouse = Mouse;
 
             // TODO: Add your update logic here
             
@@ -78,7 +85,7 @@ namespace PacMan
 
             // TODO: Add your drawing code here
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(sortMode: SpriteSortMode.Immediate);
 
 
             Screens[CurrentState].Draw(spriteBatch);

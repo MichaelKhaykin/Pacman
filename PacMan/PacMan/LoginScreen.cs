@@ -23,14 +23,13 @@ namespace PacMan
         TextBox PasswordBox;
 
         SpriteFont font;
-
-        MouseState oldMouse;
-
+        
         bool canMoveOnToNextScreen = false;
 
         TextLabel WelcomeLabel;
         TextLabel UsernameLabel;
         TextLabel PasswordLabel;
+        TextLabel ResponseLabel;
 
         public LoginScreen(GraphicsDevice graphics, ContentManager content)
             : base(graphics, content)
@@ -38,33 +37,34 @@ namespace PacMan
             font = Content.Load<SpriteFont>("Font");
             SpriteFont bigFont = Content.Load<SpriteFont>("BigFont");
 
-            UsernameLabel = new TextLabel(new Vector2(400, 170), Color.Black, "Username:", font);
-            PasswordLabel = new TextLabel(new Vector2(400, 370), Color.Black, "Password:", font);
+            UsernameLabel = new TextLabel(new Vector2(460, 170), Color.Black, "Username:", font);
+            PasswordLabel = new TextLabel(new Vector2(460, 370), Color.Black, "Password:", font);
 
             UsernameBox = new TextBox(Graphics, new Rectangle(200, 200, 600, 0), font, Color.Black, Color.White, Color.Red, false, false);
             PasswordBox = new TextBox(Graphics, new Rectangle(200, 400, 600, 0), font, Color.Black, Color.White, Color.Red, true, false);
 
-            var createButtonTexture = Content.Load<Texture2D>("createButton");
-            var scale = 0.4f;
-            CreateButton = new Button(createButtonTexture, new Vector2(200 + (createButtonTexture.Width / 2) * scale, 600), Color.White, Vector2.One * scale, null);
+            ResponseLabel = new TextLabel(new Vector2(100, 100), Color.Black, "", bigFont);
+            ResponseLabel.Rotation = MathHelper.ToRadians(90);
 
-            var loginButtonTexture = Content.Load<Texture2D>("tempbutton");
-            LoginButton = new Button(loginButtonTexture, new Vector2(400, 600), Color.White, Vector2.One, null);
+            var createButtonTexture = Content.Load<Texture2D>("CreateAnAccountButton");
+            var scale = 0.5f;
+            CreateButton = new Button(createButtonTexture, new Vector2(500, 500), Color.White, Vector2.One * scale, null);
 
-            var playButtonTexture = Content.Load<Texture2D>("nextScreenButton");
-            PlayButton = new Button(playButtonTexture, new Vector2(600, 600), Color.White, Vector2.One, null);
+            var loginButtonTexture = Content.Load<Texture2D>("SignInButton");
+            LoginButton = new Button(loginButtonTexture, new Vector2(500, 600), Color.White, Vector2.One * scale, null);
+
+            var playButtonTexture = Content.Load<Texture2D>("button_play");
+            PlayButton = new Button(playButtonTexture, new Vector2(500, 705), Color.White, Vector2.One * 0.3f, null);
 
             WelcomeLabel = new TextLabel(new Vector2(110, 0), Color.Black, "Welcome to PACMAN!", bigFont);
         }
 
         public override void Update(GameTime gameTime)
         {
-            MouseState mouse = Mouse.GetState();
-
             UsernameBox.Update(gameTime);
             PasswordBox.Update(gameTime);
 
-            if(CreateButton.IsClicked(mouse) && !CreateButton.IsClicked(oldMouse))
+            if(CreateButton.IsClicked(Game1.Mouse) && !CreateButton.IsClicked(Game1.OldMouse))
             {
                 //call sql and crap
 
@@ -90,9 +90,22 @@ namespace PacMan
                 UsernameBox.ClearText();
                 PasswordBox.ClearText();
 
+                if (table.Rows.Count > 0)
+                {
+                    var id = int.Parse(table.Rows[0]["PlayerID"].ToString());
+                    if (id < 0)
+                    {
+                        ResponseLabel.Text = "Username Taken";
+                    }
+                    else
+                    {
+                        ResponseLabel.Text = "Created!";
+                    }
+                }
+
                 //table created at this point
             }
-            if (LoginButton.IsClicked(mouse) && !LoginButton.IsClicked(oldMouse))
+            if (LoginButton.IsClicked(Game1.Mouse) && !LoginButton.IsClicked(Game1.OldMouse))
             {
                 if (UsernameBox.Text.Length == 0 && PasswordBox.Text.Length == 0)
                 {
@@ -128,14 +141,20 @@ namespace PacMan
 
                     UsernameBox.ClearText();
                     PasswordBox.ClearText();
+
+                    ResponseLabel.Text = "Login Succesful";
+                }
+                else
+                {
+                    ResponseLabel.Text = "Invalid login";
                 }
             }
-            if(PlayButton.IsClicked(mouse) && !PlayButton.IsClicked(oldMouse) && canMoveOnToNextScreen)
+            if(PlayButton.IsClicked(Game1.Mouse) && !PlayButton.IsClicked(Game1.OldMouse) && canMoveOnToNextScreen)
             {
+                Game1.Screens.Add(States.SkinSelection, new SkinsScreen(Graphics, Content));
                 Game1.CurrentState = States.SkinSelection;
             }
 
-            oldMouse = mouse;
             base.Update(gameTime);
         }
 
@@ -149,6 +168,7 @@ namespace PacMan
             UsernameLabel.Draw(spriteBatch);
             PasswordLabel.Draw(spriteBatch);
             WelcomeLabel.Draw(spriteBatch);
+            ResponseLabel.Draw(spriteBatch);
             base.Draw(spriteBatch);
         }
     }

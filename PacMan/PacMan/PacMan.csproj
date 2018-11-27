@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -13,7 +13,8 @@
     <AssemblyName>PacMan</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -41,10 +42,14 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>PacMan.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Blinky.cs" />
     <Compile Include="Clyde.cs" />
     <Compile Include="Edge.cs" />
+    <Compile Include="EndScreen.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameScreen.cs" />
@@ -53,11 +58,11 @@
     <Compile Include="LoginScreen.cs" />
     <Compile Include="MinHeapTree.cs" />
     <Compile Include="Pacman.cs" />
+    <Compile Include="PacManDirectSkin.cs" />
     <Compile Include="Pinky.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseGameSprite.cs" />
-    <Compile Include="Skin.cs" />
     <Compile Include="SkinsScreen.cs" />
     <Compile Include="UserData.cs" />
     <Compile Include="Vertex.cs" />
@@ -78,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
+    <None Include="app.config" />
     <None Include="app.manifest" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

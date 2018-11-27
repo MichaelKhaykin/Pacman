@@ -8,21 +8,24 @@ namespace PacMan
 {
     public class Pacman : BaseGameSprite
     {
+        public Effect effect;
+        public Texture2D AppliedSkin;
+
         public bool IsPowerActivated = false;
 
-        private TimeSpan PowerTime;
+        public TimeSpan PowerTime;
         public TimeSpan elapsedPowerTime;
 
         Dictionary<Keys, Func<List<BaseGameSprite>, bool>> Movements;
 
         public Directions Direction;
 
-        private List<Rectangle> Frames = new List<Rectangle>();
+        protected List<Rectangle> Frames = new List<Rectangle>();
 
-        private int currentIndex = 0;
+        protected int currentIndex = 0;
 
-        private TimeSpan elapsedTimePerFrame;
-        private TimeSpan timePerFrame;
+        protected TimeSpan elapsedTimePerFrame;
+        protected TimeSpan timePerFrame;
 
         protected override Vector2 Origin
         {
@@ -39,20 +42,16 @@ namespace PacMan
                 return new Rectangle((int)Position.X, (int)Position.Y, Frames[currentIndex].Width, Frames[currentIndex].Height);
             }
         }
-
-        private SpriteFont font;
-
+        
         private bool canMoveLeft;
         private bool canMoveRight;
         private bool canMoveUp;
         private bool canMoveDown;
         private Keys lastValidKeyPressed;
 
-        public Pacman(Texture2D texture, Vector2 position, Color color, Vector2 scale, SpriteFont font)
+        public Pacman(Texture2D texture, Vector2 position, Color color, Vector2 scale)
             : base(texture, position, color, scale)
         {
-            this.font = font;
-
             Movements = new Dictionary<Keys, Func<List<BaseGameSprite>, bool>>()
             {
                 [Keys.W] = (walls) => Move(walls, new Vector2(Position.X, Position.Y - moveAmount), ref canMoveUp, Directions.Up),
@@ -78,7 +77,7 @@ namespace PacMan
             elapsedTimePerFrame = TimeSpan.Zero;
             timePerFrame = TimeSpan.FromMilliseconds(75);
 
-            PowerTime = TimeSpan.FromSeconds(10);
+            PowerTime = TimeSpan.FromSeconds(6);
             elapsedPowerTime = TimeSpan.Zero;
         }
 
@@ -207,8 +206,20 @@ namespace PacMan
         }
 
         public override void Draw(SpriteBatch sb)
-        {
-            sb.Draw(Texture, Position + Origin, Frames[currentIndex], Color, Rotation, Origin, Scale, SpriteEffects.None, 0f);
+        { 
+            if(effect != null)
+            {
+                effect.Parameters["Skin"].SetValue(AppliedSkin);
+                foreach (var pass in effect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+                    sb.Draw(Texture, Position + Origin, Frames[currentIndex], Color, Rotation, Origin, Scale, SpriteEffects.None, 0f);
+                }
+            }
+            else
+            {
+                sb.Draw(Texture, Position + Origin, Frames[currentIndex], Color, Rotation, Origin, Scale, SpriteEffects.None, 0f);
+            }
         }
     }
 }

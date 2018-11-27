@@ -20,7 +20,6 @@ namespace PacMan
         Login,
         SkinSelection,
         Play,
-        Lose,
-        Win
+        End
     }
 }

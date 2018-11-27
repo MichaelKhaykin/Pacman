@@ -39,6 +39,7 @@ namespace PacMan
         
         bool shouldStart = false;
 
+        int originalFoodCount = 0;
 
         public GameScreen(GraphicsDevice graphics, ContentManager content) : base(graphics, content)
         {
@@ -83,7 +84,6 @@ namespace PacMan
             var blinkyTexture = Content.Load<Texture2D>("blinky");
             var pinkyTexture = Content.Load<Texture2D>("pinky");
             var clydeTexture = Content.Load<Texture2D>("clyde");
-            var pacManTexture = Content.Load<Texture2D>("pacmanspritesheet");
             var inkyTexture = Content.Load<Texture2D>("inky");
 
             var foodTexture = Content.Load<Texture2D>("PacManFood");
@@ -176,7 +176,6 @@ namespace PacMan
             }
 
 
-            pac = new Pacman(pacManTexture, new Vector2(120, 40), Color.Yellow, Vector2.One, font);
             pinky = new Pinky(pinkyTexture, new Vector2(400, 360), Color.White, Vector2.One, Map);
             Clyde = new Clyde(clydeTexture, new Vector2(440, 360), Color.White, Vector2.One, Map);
             blinky = new Blinky(blinkyTexture, new Vector2(480, 360), Color.White, Vector2.One, Map);
@@ -184,23 +183,48 @@ namespace PacMan
 
             for (int i = 0; i < food.Count; i++)
             {
-                if (food[i].Position == pinky.Position || food[i].Position == Clyde.Position
-                    || food[i].Position == blinky.Position)
+                bool wasRemoved = false;
+                for (int j = 0; j < PowerUps.Count; j++)
+                {
+                    if (food[i].HitBox.Contains(PowerUps[j].Position))
+                    {
+                        food.RemoveAt(i);
+                        wasRemoved = true;
+                    }
+                }
+                if (wasRemoved) i--;
+            }
+
+            Ghosts = new List<BaseGameSprite>
+            {
+                Inky,
+                blinky,
+                Clyde,
+                pinky
+            };
+
+            originalFoodCount = food.Count;
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            for (int i = 0; i < food.Count; i++)
+            {
+                if (food[i].HitBox.Contains(pac.Position))
                 {
                     food.RemoveAt(i);
                     i--;
                 }
             }
 
-            Ghosts = new List<BaseGameSprite>();
-            Ghosts.Add(Inky);
-            Ghosts.Add(blinky);
-            Ghosts.Add(Clyde);
-            Ghosts.Add(pinky);
-        }
+            if (food.Count == 0)
+            {
+                Game1.CurrentUserData.Money += 100 * Hearts.Count;
+                Game1.CurrentState = States.End;
+                Game1.DidWin = true;
+                Game1.Screens.Add(States.End, new EndScreen(Graphics, Content));
+            }
 
-        public override void Update(GameTime gameTime)
-        {
             var keyboard = Keyboard.GetState();
             foreach (var key in StartKeys)
             {
@@ -218,7 +242,7 @@ namespace PacMan
                     {
                         food.RemoveAt(i);
                         i--;
-                    }
+                    } 
                 }
 
                 pac.Update(gameTime, Walls, Graphics);
@@ -232,10 +256,16 @@ namespace PacMan
                 {
                     if (pac.HitBox.Contains(ghost.HitBox) && !pac.IsPowerActivated)
                     {
-                        if (Hearts.Count > 0)
+                        
+                        Hearts.RemoveAt(Hearts.Count - 1);
+                        if (Hearts.Count == 0)
                         {
-                            Hearts.RemoveAt(Hearts.Count - 1);
+                            Game1.CurrentUserData.Money += (int)(((float)food.Count / originalFoodCount) * 100);
+                            Game1.CurrentState = States.End;
+                            Game1.DidWin = false;
+                            Game1.Screens.Add(States.End, new EndScreen(Graphics, Content));
                         }
+
                         shouldStart = false;
 
                         pac.Position = new Vector2(120, 40);
@@ -267,6 +297,10 @@ namespace PacMan
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            pac.Draw(spriteBatch);
+            spriteBatch.End();
+            spriteBatch.Begin();
+
             for (int i = 0; i <= Graphics.Viewport.Width / pac.Texture.Width; i++)
             {
                 spriteBatch.Draw(pixel, new Rectangle(i * 40, 0, 1, Graphics.Viewport.Height), Color.White);
@@ -293,7 +327,6 @@ namespace PacMan
                 power.Draw(spriteBatch);
             }
 
-            pac.Draw(spriteBatch);
             blinky.Draw(spriteBatch);
             pinky.Draw(spriteBatch);
             Clyde.Draw(spriteBatch);
@@ -301,7 +334,7 @@ namespace PacMan
 
             if (pac.IsPowerActivated)
             {
-                if (pac.elapsedPowerTime >= TimeSpan.FromSeconds(8))
+                if (pac.elapsedPowerTime >= pac.PowerTime - TimeSpan.FromSeconds(2))
                 {
                     spriteBatch.Draw(pixel, new Rectangle(0, 0, Graphics.Viewport.Width, Graphics.Viewport.Height), Color.Red * 0.5f);
                 }
