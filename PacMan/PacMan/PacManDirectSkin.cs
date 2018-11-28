@@ -54,6 +54,19 @@ namespace PacMan
                 }
             }
 
+            if (!IsUnlocked)
+            {
+                Color = Color.Gray * 0.6f;
+            }
+            else
+            {
+                Color = Color.White;
+            }
+            if (HitBox.Contains(Game1.Mouse.Position))
+            {
+                Color = Color.Yellow;
+            }
+
             base.Update(gameTime);
         }
 
@@ -64,15 +77,6 @@ namespace PacMan
             MoneyLabel.Draw(sb);
             sb.End();
             sb.Begin(sortMode: SpriteSortMode.Immediate);
-
-            if(!IsUnlocked)
-            {
-                Color = Color.Gray * 0.6f;
-            }
-            else
-            {
-                Color = Color.White;
-            }
 
             if (!Apply)
             {

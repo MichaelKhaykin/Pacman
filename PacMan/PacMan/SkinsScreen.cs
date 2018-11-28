@@ -30,7 +30,7 @@ namespace PacMan
         public SkinsScreen(GraphicsDevice graphics, ContentManager content)
             : base(graphics, content)
         {
-            
+
 
             var font = Content.Load<SpriteFont>("Font");
 
@@ -87,7 +87,7 @@ namespace PacMan
                 Skins[i].HitBox = new Rectangle((int)(Skins[i].Position.X - width), (int)(Skins[i].Position.Y - height), (int)(width * Skins[i].Scale.X), (int)(height * Skins[i].Scale.Y));
                 Skins[i].SkinID = i + 1;
             }
-            
+
             SqlConnection connection = new SqlConnection(Game1.ConnectionString);
             SqlCommand command = new SqlCommand("usp_GetBoughtSkinIDs", connection)
             {
@@ -125,7 +125,66 @@ namespace PacMan
 
             MoneyLabel.Text = $"Money:{Game1.CurrentUserData.Money}";
 
-            if(goToGameButton.IsClicked(Game1.Mouse) && !goToGameButton.IsClicked(Game1.OldMouse))
+            foreach (var skin in Skins)
+            {
+                if (isSelecting)
+                {
+                    if (skin.IsUnlocked && skin.HitBox.Contains(Game1.Mouse.Position) && Game1.Mouse.LeftButton == ButtonState.Pressed)
+                    {
+                        //figure out how to make a new texture
+                        GameScreen.pac.effect = skin.Effect;
+                        GameScreen.pac.AppliedSkin = skin.AppliedSkin;
+                    }
+                }
+
+                if (isBuying)
+            {
+                if (!skin.IsUnlocked && skin.HitBox.Contains(Game1.Mouse.Position) && Game1.Mouse.LeftButton == ButtonState.Pressed
+                    && Game1.CurrentUserData.Money - skin.Cost >= 0)
+                {
+                    //figure out how to make a new texture
+                    skin.IsUnlocked = true;
+                    Game1.CurrentUserData.Money -= skin.Cost;
+
+                    #region UpdatingMoney
+                    SqlConnection connection = new SqlConnection(Game1.ConnectionString);
+                    SqlCommand command = new SqlCommand("usp_UpdateMoney", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    command.Parameters.Add(new SqlParameter("@PlayerID", Game1.CurrentUserData.PlayerID));
+                    command.Parameters.Add(new SqlParameter("@NewMoney", Game1.CurrentUserData.Money));
+
+                    DataTable table = new DataTable();
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                    connection.Open();
+                    adapter.Fill(table);
+                    connection.Close();
+
+                    #endregion
+
+                    #region BuyingSkin
+                    command = new SqlCommand("usp_BuySkin", connection)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+                    command.Parameters.Add(new SqlParameter("@PlayerID", Game1.CurrentUserData.PlayerID));
+                    command.Parameters.Add(new SqlParameter("@SkinID", skin.SkinID));
+
+                    table = new DataTable();
+                    adapter = new SqlDataAdapter(command);
+
+                    connection.Open();
+                    adapter.Fill(table);
+                    connection.Close();
+                    #endregion
+                }
+            }
+            }
+
+
+            if (goToGameButton.IsClicked(Game1.Mouse) && !goToGameButton.IsClicked(Game1.OldMouse))
             {
                  Game1.CurrentState = States.Play;
                 Game1.Screens.Add(States.Play, new GameScreen(Graphics, Content));
@@ -138,67 +197,6 @@ namespace PacMan
             {
                 isBuying = true;
             }
-            
-            if(isSelecting)
-            {
-                foreach (var skin in Skins)
-                {
-                    
-                    if (skin.IsUnlocked && skin.HitBox.Contains(Game1.Mouse.Position) && Game1.Mouse.LeftButton == ButtonState.Pressed)
-                    {
-                        //figure out how to make a new texture
-                        GameScreen.pac.effect = skin.Effect;
-                        GameScreen.pac.AppliedSkin = skin.AppliedSkin;
-                    }
-                }
-            }
-            if(isBuying)
-            {
-                foreach (var skin in Skins)
-                {
-                    if (!skin.IsUnlocked && skin.HitBox.Contains(Game1.Mouse.Position) && Game1.Mouse.LeftButton == ButtonState.Pressed 
-                        && Game1.CurrentUserData.Money - skin.Cost >= 0)
-                    {
-                        //figure out how to make a new texture
-                        skin.IsUnlocked = true;
-                        Game1.CurrentUserData.Money -= skin.Cost;
-
-                        #region UpdatingMoney
-                        SqlConnection connection = new SqlConnection(Game1.ConnectionString);
-                        SqlCommand command = new SqlCommand("usp_UpdateMoney", connection)
-                        {
-                            CommandType = CommandType.StoredProcedure
-                        };
-                        command.Parameters.Add(new SqlParameter("@PlayerID", Game1.CurrentUserData.PlayerID));
-                        command.Parameters.Add(new SqlParameter("@NewMoney", Game1.CurrentUserData.Money));
-
-                        DataTable table = new DataTable();
-                        SqlDataAdapter adapter = new SqlDataAdapter(command);
-
-                        connection.Open();
-                        adapter.Fill(table);
-                        connection.Close();
-
-                        #endregion
-
-                        #region BuyingSkin
-                        command = new SqlCommand("usp_BuySkin", connection)
-                        {
-                            CommandType = CommandType.StoredProcedure
-                        };
-                        command.Parameters.Add(new SqlParameter("@PlayerID", Game1.CurrentUserData.PlayerID));
-                        command.Parameters.Add(new SqlParameter("@SkinID", skin.SkinID));
-
-                        table = new DataTable();
-                        adapter = new SqlDataAdapter(command);
-
-                        connection.Open();
-                        adapter.Fill(table);
-                        connection.Close();
-                        #endregion
-                    }
-                }
-            }
 
             foreach (var skin in Skins)
             {
@@ -209,17 +207,17 @@ namespace PacMan
         }
         
         public override void Draw(SpriteBatch spriteBatch)
-        {
-            MoneyLabel.Draw(spriteBatch);
-            goToGameButton.Draw(spriteBatch);
-            BuyButton.Draw(spriteBatch);
-            SelectButton.Draw(spriteBatch);
+{
+    MoneyLabel.Draw(spriteBatch);
+    goToGameButton.Draw(spriteBatch);
+    BuyButton.Draw(spriteBatch);
+    SelectButton.Draw(spriteBatch);
 
-            foreach (var skin in Skins)
-            {
-                skin.Draw(spriteBatch);
-            }
-            base.Draw(spriteBatch);
-        }
+    foreach (var skin in Skins)
+    {
+        skin.Draw(spriteBatch);
+    }
+    base.Draw(spriteBatch);
+}
     }
 }
