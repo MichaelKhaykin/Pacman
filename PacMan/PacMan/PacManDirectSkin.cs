@@ -18,8 +18,10 @@ namespace PacMan
 
         public int SkinID = 0;
         public bool IsUnlocked = false;
-        
+
         TextLabel MoneyLabel;
+
+        public int Cost;
 
         public Texture2D pixel;
 
@@ -36,6 +38,7 @@ namespace PacMan
             var font = content.Load<SpriteFont>("Font");
             MoneyLabel = new TextLabel(new Vector2(Position.X, (Position.Y + (40 * Scale.Y) - 20)), Color.White, $"${money}", font);
 
+            Cost = money;
         }
 
         public override void Update(GameTime gameTime)
@@ -59,13 +62,16 @@ namespace PacMan
             sb.End();
             sb.Begin();
             MoneyLabel.Draw(sb);
-            sb.Draw(Game1.Pixel, HitBox, Color.Red);
             sb.End();
             sb.Begin(sortMode: SpriteSortMode.Immediate);
 
             if(!IsUnlocked)
             {
                 Color = Color.Gray * 0.6f;
+            }
+            else
+            {
+                Color = Color.White;
             }
 
             if (!Apply)

@@ -23,6 +23,7 @@ namespace PacMan
         Button BuyButton;
 
         bool isSelecting = false;
+        bool isBuying = false;
 
         TextLabel MoneyLabel;
 
@@ -133,7 +134,11 @@ namespace PacMan
             {
                 isSelecting = true;
             }
-
+            if (BuyButton.IsClicked(Game1.Mouse) && !BuyButton.IsClicked(Game1.OldMouse))
+            {
+                isBuying = true;
+            }
+            
             if(isSelecting)
             {
                 foreach (var skin in Skins)
@@ -147,7 +152,54 @@ namespace PacMan
                     }
                 }
             }
-            
+            if(isBuying)
+            {
+                foreach (var skin in Skins)
+                {
+                    if (!skin.IsUnlocked && skin.HitBox.Contains(Game1.Mouse.Position) && Game1.Mouse.LeftButton == ButtonState.Pressed 
+                        && Game1.CurrentUserData.Money - skin.Cost >= 0)
+                    {
+                        //figure out how to make a new texture
+                        skin.IsUnlocked = true;
+                        Game1.CurrentUserData.Money -= skin.Cost;
+
+                        #region UpdatingMoney
+                        SqlConnection connection = new SqlConnection(Game1.ConnectionString);
+                        SqlCommand command = new SqlCommand("usp_UpdateMoney", connection)
+                        {
+                            CommandType = CommandType.StoredProcedure
+                        };
+                        command.Parameters.Add(new SqlParameter("@PlayerID", Game1.CurrentUserData.PlayerID));
+                        command.Parameters.Add(new SqlParameter("@NewMoney", Game1.CurrentUserData.Money));
+
+                        DataTable table = new DataTable();
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                        connection.Open();
+                        adapter.Fill(table);
+                        connection.Close();
+
+                        #endregion
+
+                        #region BuyingSkin
+                        command = new SqlCommand("usp_BuySkin", connection)
+                        {
+                            CommandType = CommandType.StoredProcedure
+                        };
+                        command.Parameters.Add(new SqlParameter("@PlayerID", Game1.CurrentUserData.PlayerID));
+                        command.Parameters.Add(new SqlParameter("@SkinID", skin.SkinID));
+
+                        table = new DataTable();
+                        adapter = new SqlDataAdapter(command);
+
+                        connection.Open();
+                        adapter.Fill(table);
+                        connection.Close();
+                        #endregion
+                    }
+                }
+            }
+
             foreach (var skin in Skins)
             {
                 skin.Update(gameTime);
