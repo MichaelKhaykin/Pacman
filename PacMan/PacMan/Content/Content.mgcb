@@ -42,7 +42,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:blinky.png
+/build:blinky.png;inky.png
 
 #begin button_play.png
 /importer:TextureImporter
@@ -169,7 +169,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:inky.png
+/build:inky.png;blinky.png
 
 #begin Map.png
 /importer:TextureImporter

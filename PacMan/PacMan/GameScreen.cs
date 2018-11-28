@@ -26,7 +26,7 @@ namespace PacMan
         List<Keys> StartKeys;
 
         Graph Map;
-        Graph InkyMap;
+        Graph BlinkyMap;
 
 
         List<BaseGameSprite> Walls = new List<BaseGameSprite>();
@@ -85,7 +85,7 @@ namespace PacMan
             SpriteFont font = Content.Load<SpriteFont>("Font");
 
             Map = new Graph(Manhattan);
-            InkyMap = new Graph(Euclidean);
+            BlinkyMap = new Graph(Euclidean);
 
             var square = Content.Load<Texture2D>("PacManImage");
             var blinkyTexture = Content.Load<Texture2D>("blinky");
@@ -124,7 +124,7 @@ namespace PacMan
                 if (colorData[i] != invalidFoodColor)
                 {
                     Map.AddVertex(new Vector2(x, y));
-                    InkyMap.AddVertex(new Vector2(x, y));
+                    BlinkyMap.AddVertex(new Vector2(x, y));
                     food.Add(new BaseGameSprite(foodTexture, new Vector2(x, y), Color.Yellow, Vector2.One));
                 }
 
@@ -159,34 +159,34 @@ namespace PacMan
                 Map.AddEdge(40, currentVertex, downVertex);
 
 
-                var upLeftDiagonal = InkyMap.FindVertex(new Vector2(x - 40, y - 40));
-                var upRightDiagonal = InkyMap.FindVertex(new Vector2(x + 40, y - 40));
-                var downLeftDiagonal = InkyMap.FindVertex(new Vector2(x - 40, y + 40));
-                var downRightDiagonal = InkyMap.FindVertex(new Vector2(x + 40, y + 40));
+                var upLeftDiagonal = BlinkyMap.FindVertex(new Vector2(x - 40, y - 40));
+                var upRightDiagonal = BlinkyMap.FindVertex(new Vector2(x + 40, y - 40));
+                var downLeftDiagonal = BlinkyMap.FindVertex(new Vector2(x - 40, y + 40));
+                var downRightDiagonal = BlinkyMap.FindVertex(new Vector2(x + 40, y + 40));
 
-                currentVertex = InkyMap.FindVertex(new Vector2(x, y));
+                currentVertex = BlinkyMap.FindVertex(new Vector2(x, y));
 
-                leftVertex = InkyMap.FindVertex(new Vector2(x - 40, y));
-                rightVertex = InkyMap.FindVertex(new Vector2(x + 40, y));
-                upVertex = InkyMap.FindVertex(new Vector2(x, y - 40));
-                downVertex = InkyMap.FindVertex(new Vector2(x, y + 40));
+                leftVertex = BlinkyMap.FindVertex(new Vector2(x - 40, y));
+                rightVertex = BlinkyMap.FindVertex(new Vector2(x + 40, y));
+                upVertex = BlinkyMap.FindVertex(new Vector2(x, y - 40));
+                downVertex = BlinkyMap.FindVertex(new Vector2(x, y + 40));
 
 
-                InkyMap.AddEdge(40, currentVertex, leftVertex);
-                InkyMap.AddEdge(40, currentVertex, rightVertex);
-                InkyMap.AddEdge(40, currentVertex, upVertex);
-                InkyMap.AddEdge(40, currentVertex, downVertex);
-                InkyMap.AddEdge(40, currentVertex, upLeftDiagonal);
-                InkyMap.AddEdge(40, currentVertex, upRightDiagonal);
-                InkyMap.AddEdge(40, currentVertex, downLeftDiagonal);
-                InkyMap.AddEdge(40, currentVertex, downRightDiagonal);
+                BlinkyMap.AddEdge(40, currentVertex, leftVertex);
+                BlinkyMap.AddEdge(40, currentVertex, rightVertex);
+                BlinkyMap.AddEdge(40, currentVertex, upVertex);
+                BlinkyMap.AddEdge(40, currentVertex, downVertex);
+                BlinkyMap.AddEdge(40, currentVertex, upLeftDiagonal);
+                BlinkyMap.AddEdge(40, currentVertex, upRightDiagonal);
+                BlinkyMap.AddEdge(40, currentVertex, downLeftDiagonal);
+                BlinkyMap.AddEdge(40, currentVertex, downRightDiagonal);
             }
 
 
             pinky = new Pinky(pinkyTexture, new Vector2(400, 360), Color.White, Vector2.One, Map);
             Clyde = new Clyde(clydeTexture, new Vector2(440, 360), Color.White, Vector2.One, Map);
-            blinky = new Blinky(blinkyTexture, new Vector2(480, 360), Color.White, Vector2.One, Map);
-            Inky = new Inky(inkyTexture, new Vector2(520, 360), Color.White, Vector2.One, InkyMap);
+            blinky = new Blinky(blinkyTexture, new Vector2(480, 360), Color.White, Vector2.One, BlinkyMap);
+            Inky = new Inky(inkyTexture, new Vector2(520, 360), Color.White, Vector2.One, Map);
 
             for (int i = 0; i < food.Count; i++)
             {
@@ -253,10 +253,10 @@ namespace PacMan
                 }
 
                 pac.Update(gameTime, Walls, Graphics);
-                //blinky.Update(gameTime);
-             //   pinky.Update(gameTime);
-           //     Clyde.Update(gameTime);
-                //Inky.Update(gameTime);
+                blinky.Update(gameTime);
+                pinky.Update(gameTime);
+                Clyde.Update(gameTime);
+                Inky.Update(gameTime);
 
 
                 foreach (var ghost in Ghosts)
