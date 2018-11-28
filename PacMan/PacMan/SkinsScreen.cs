@@ -29,6 +29,8 @@ namespace PacMan
         public SkinsScreen(GraphicsDevice graphics, ContentManager content)
             : base(graphics, content)
         {
+            
+
             var font = Content.Load<SpriteFont>("Font");
 
             MoneyLabel = new TextLabel(new Vector2(0, 0), Color.Black, "", font);
@@ -79,6 +81,9 @@ namespace PacMan
             //set ids
             for (int i = 0; i < Skins.Count; i++)
             {
+                int width = GameScreen.pac.Texture.Width;
+                int height = GameScreen.pac.Texture.Height;
+                Skins[i].HitBox = new Rectangle((int)(Skins[i].Position.X - width), (int)(Skins[i].Position.Y - height), (int)(width * Skins[i].Scale.X), (int)(height * Skins[i].Scale.Y));
                 Skins[i].SkinID = i + 1;
             }
             
@@ -133,6 +138,7 @@ namespace PacMan
             {
                 foreach (var skin in Skins)
                 {
+                    
                     if (skin.IsUnlocked && skin.HitBox.Contains(Game1.Mouse.Position) && Game1.Mouse.LeftButton == ButtonState.Pressed)
                     {
                         //figure out how to make a new texture

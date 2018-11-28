@@ -20,7 +20,11 @@ namespace PacMan
         public bool IsUnlocked = false;
         
         TextLabel MoneyLabel;
-        
+
+        public Texture2D pixel;
+
+        public Rectangle HitBox { get; set; }
+
         public PacManDirectSkin(Texture2D originalTexture, Texture2D appliedTexture, Vector2 position, Color color, Vector2 scale, Effect effect, int money, ContentManager content) 
             : base(originalTexture, position, color, scale)
         {
@@ -31,6 +35,7 @@ namespace PacMan
 
             var font = content.Load<SpriteFont>("Font");
             MoneyLabel = new TextLabel(new Vector2(Position.X, (Position.Y + (40 * Scale.Y) - 20)), Color.White, $"${money}", font);
+
         }
 
         public override void Update(GameTime gameTime)
@@ -54,6 +59,7 @@ namespace PacMan
             sb.End();
             sb.Begin();
             MoneyLabel.Draw(sb);
+            sb.Draw(Game1.Pixel, HitBox, Color.Red);
             sb.End();
             sb.Begin(sortMode: SpriteSortMode.Immediate);
 

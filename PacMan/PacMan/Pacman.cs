@@ -106,8 +106,8 @@ namespace PacMan
             //IMPORTANT
             //THIS HAS TO RUN FIRST
             base.Update(gameTime);
-
             elapsedTimePerFrame += gameTime.ElapsedGameTime;
+
 
             if (IsPowerActivated)
             {

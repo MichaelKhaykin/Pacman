@@ -29,6 +29,8 @@ namespace PacMan
 
         public static bool DidWin;
 
+        public static Texture2D Pixel;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -53,6 +55,9 @@ namespace PacMan
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            Pixel = new Texture2D(GraphicsDevice, 1, 1);
+            Pixel.SetData(new [] { Color.White });
 
             ConnectionString = "Server=MichaelsLaptop; Database=PacManDatabase; Trusted_Connection=True";
 
