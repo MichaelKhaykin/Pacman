@@ -25,7 +25,7 @@ namespace PacMan
         protected int currentIndex = 0;
 
         protected TimeSpan elapsedTimePerFrame;
-        protected TimeSpan timePerFrame;
+        public TimeSpan TimePerFrame;
 
         protected override Vector2 Origin
         {
@@ -49,7 +49,7 @@ namespace PacMan
         private bool canMoveDown;
         private Keys lastValidKeyPressed;
 
-        public Pacman(Texture2D texture, Vector2 position, Color color, Vector2 scale)
+        public Pacman(Texture2D texture, Vector2 position, Color color, Vector2 scale, TimeSpan timePerFrame)
             : base(texture, position, color, scale)
         {
             Movements = new Dictionary<Keys, Func<List<BaseGameSprite>, bool>>()
@@ -75,7 +75,7 @@ namespace PacMan
             };
 
             elapsedTimePerFrame = TimeSpan.Zero;
-            timePerFrame = TimeSpan.FromMilliseconds(75);
+            TimePerFrame = timePerFrame;
 
             PowerTime = TimeSpan.FromSeconds(6);
             elapsedPowerTime = TimeSpan.Zero;
@@ -106,9 +106,7 @@ namespace PacMan
             //IMPORTANT
             //THIS HAS TO RUN FIRST
             base.Update(gameTime);
-            elapsedTimePerFrame += gameTime.ElapsedGameTime;
-
-
+            
             if (IsPowerActivated)
             {
                 elapsedPowerTime += gameTime.ElapsedGameTime;
@@ -120,16 +118,7 @@ namespace PacMan
                 IsPowerActivated = false;
             }
 
-            if (elapsedTimePerFrame >= timePerFrame)
-            {
-                currentIndex++;
-                elapsedTimePerFrame = TimeSpan.Zero;
-            }
-
-            if (currentIndex >= Frames.Count)
-            {
-                currentIndex = 0;
-            }
+            Animate(gameTime);
 
             KeyboardState keyboard = Keyboard.GetState();
             var pressedKeys = keyboard.GetPressedKeys();
@@ -202,6 +191,20 @@ namespace PacMan
                         Position.X -= moveAmount;
                     }
                     break;
+            }
+        }
+
+        public void Animate(GameTime gameTime)
+        {
+            elapsedTimePerFrame += gameTime.ElapsedGameTime;
+            if(elapsedTimePerFrame >= TimePerFrame)
+            {
+                elapsedTimePerFrame = TimeSpan.Zero;
+                currentIndex++;
+                if(currentIndex >= Frames.Count)
+                {
+                    currentIndex = 0;
+                }
             }
         }
 

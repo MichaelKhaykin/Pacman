@@ -22,13 +22,15 @@ namespace PacMan
         TextLabel MoneyLabel;
 
         public int Cost;
-
-        public Texture2D pixel;
-
+        
         public Rectangle HitBox { get; set; }
 
-        public PacManDirectSkin(Texture2D originalTexture, Texture2D appliedTexture, Vector2 position, Color color, Vector2 scale, Effect effect, int money, ContentManager content) 
-            : base(originalTexture, position, color, scale)
+        public string Name;
+
+        bool drawBox = false;
+
+        public PacManDirectSkin(Texture2D originalTexture, Texture2D appliedTexture, Vector2 position, Color color, Vector2 scale, Effect effect, int money, ContentManager content, string name, TimeSpan timePerFrame) 
+            : base(originalTexture, position, color, scale, timePerFrame)
         {
             AppliedSkin = appliedTexture;
             Effect = effect;
@@ -39,12 +41,14 @@ namespace PacMan
             MoneyLabel = new TextLabel(new Vector2(Position.X, (Position.Y + (40 * Scale.Y) - 20)), Color.White, $"${money}", font);
 
             Cost = money;
+
+            Name = name;
         }
 
         public override void Update(GameTime gameTime)
         {
             elapsedTimePerFrame += gameTime.ElapsedGameTime;
-            if(elapsedTimePerFrame >= timePerFrame)
+            if(elapsedTimePerFrame >= TimePerFrame)
             {
                 elapsedTimePerFrame = TimeSpan.Zero;
                 currentIndex++;
@@ -64,7 +68,11 @@ namespace PacMan
             }
             if (HitBox.Contains(Game1.Mouse.Position))
             {
-                Color = Color.Yellow;
+                drawBox = true;
+            }
+            else
+            {
+                drawBox = false;
             }
 
             base.Update(gameTime);
@@ -75,6 +83,10 @@ namespace PacMan
             sb.End();
             sb.Begin();
             MoneyLabel.Draw(sb);
+            if(drawBox)
+            {
+                sb.Draw(Game1.Pixel, HitBox, Color.Red);
+            }
             sb.End();
             sb.Begin(sortMode: SpriteSortMode.Immediate);
 
@@ -84,6 +96,11 @@ namespace PacMan
                 return;
             }
 
+            if(Effect == null)
+            {
+                base.Draw(sb);
+                return;
+            }
             Effect.Parameters["Skin"].SetValue(AppliedSkin);
             foreach(var pass in Effect.CurrentTechnique.Passes)
             {

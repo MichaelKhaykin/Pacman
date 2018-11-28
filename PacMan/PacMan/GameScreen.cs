@@ -43,6 +43,13 @@ namespace PacMan
 
         public GameScreen(GraphicsDevice graphics, ContentManager content) : base(graphics, content)
         {
+            //This is because we are using the same pacman in the skinscreen
+            //and some of the variables were changed
+            #region PacManReInitizilation
+            pac.Position = new Vector2(120, 40);
+            pac.Scale = Vector2.One;
+            pac.TimePerFrame = TimeSpan.FromMilliseconds(75);
+            #endregion
 
             #region DeclareStartKeys
             StartKeys = new List<Keys>();
@@ -246,10 +253,10 @@ namespace PacMan
                 }
 
                 pac.Update(gameTime, Walls, Graphics);
-                blinky.Update(gameTime);
-                pinky.Update(gameTime);
-                Clyde.Update(gameTime);
-                Inky.Update(gameTime);
+                //blinky.Update(gameTime);
+             //   pinky.Update(gameTime);
+           //     Clyde.Update(gameTime);
+                //Inky.Update(gameTime);
 
 
                 foreach (var ghost in Ghosts)
