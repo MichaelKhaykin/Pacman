@@ -81,8 +81,8 @@ namespace PacMan
             //set ids
             for (int i = 0; i < Skins.Count; i++)
             {
-                int width = GameScreen.pac.Texture.Width;
-                int height = GameScreen.pac.Texture.Height;
+                int width = 40;
+                int height = 40;
                 Skins[i].HitBox = new Rectangle((int)(Skins[i].Position.X - width), (int)(Skins[i].Position.Y - height), (int)(width * Skins[i].Scale.X), (int)(height * Skins[i].Scale.Y));
                 Skins[i].SkinID = i + 1;
             }
