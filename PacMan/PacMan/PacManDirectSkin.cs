@@ -30,7 +30,7 @@ namespace PacMan
         bool drawBox = false;
 
         public PacManDirectSkin(Texture2D originalTexture, Texture2D appliedTexture, Vector2 position, Color color, Vector2 scale, Effect effect, int money, ContentManager content, string name, TimeSpan timePerFrame) 
-            : base(originalTexture, position, color, scale, timePerFrame)
+            : base(originalTexture, position, color, scale, timePerFrame, content)
         {
             AppliedSkin = appliedTexture;
             Effect = effect;

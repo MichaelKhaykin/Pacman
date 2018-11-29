@@ -151,8 +151,8 @@ namespace PacMan
             }
             if(PlayButton.IsClicked(Game1.Mouse) && !PlayButton.IsClicked(Game1.OldMouse) && canMoveOnToNextScreen)
             {
-                Game1.Screens.Add(States.SkinSelection, new SkinsScreen(Graphics, Content));
-                Game1.CurrentState = States.SkinSelection;
+                Game1.Screens.Add(ScreenStates.SkinSelection, new SkinsScreen(Graphics, Content));
+                Game1.CurrentState = ScreenStates.SkinSelection;
             }
 
             base.Update(gameTime);

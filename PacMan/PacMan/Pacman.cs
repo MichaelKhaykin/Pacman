@@ -1,8 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PacMan
 {
@@ -49,9 +52,14 @@ namespace PacMan
         private bool canMoveDown;
         private Keys lastValidKeyPressed;
 
-        public Pacman(Texture2D texture, Vector2 position, Color color, Vector2 scale, TimeSpan timePerFrame)
+        public SoundEffect SoundEffect;
+        private TimeSpan elapsedSoundEffectTime; 
+
+        public Pacman(Texture2D texture, Vector2 position, Color color, Vector2 scale, TimeSpan timePerFrame, ContentManager content)
             : base(texture, position, color, scale)
         {
+            SoundEffect = content.Load<SoundEffect>("pacmanwakawaka");
+            
             Movements = new Dictionary<Keys, Func<List<BaseGameSprite>, bool>>()
             {
                 [Keys.W] = (walls) => Move(walls, new Vector2(Position.X, Position.Y - moveAmount), ref canMoveUp, Directions.Up),
@@ -79,10 +87,18 @@ namespace PacMan
 
             PowerTime = TimeSpan.FromSeconds(6);
             elapsedPowerTime = TimeSpan.Zero;
+
+            elapsedSoundEffectTime = SoundEffect.Duration;
         }
 
         private bool Move(List<BaseGameSprite> walls, Vector2 pointToCheck, ref bool booleanToSet, Directions directionToSet)
         {
+            if(elapsedSoundEffectTime >= SoundEffect.Duration)
+            {
+                SoundEffect.Play();
+                elapsedSoundEffectTime = TimeSpan.Zero;
+            }
+
             bool shouldSetNewDirection = true;
             foreach (var wall in walls)
             {
@@ -107,6 +123,8 @@ namespace PacMan
             //THIS HAS TO RUN FIRST
             base.Update(gameTime);
             
+            elapsedSoundEffectTime += gameTime.ElapsedGameTime;
+
             if (IsPowerActivated)
             {
                 elapsedPowerTime += gameTime.ElapsedGameTime;

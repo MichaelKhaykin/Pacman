@@ -16,8 +16,8 @@ namespace PacMan
 
         Color screenTint = Color.Gray * 0.5f;
 
-        public static Dictionary<States, Screen> Screens = new Dictionary<States, Screen>();
-        public static States CurrentState;
+        public static Dictionary<ScreenStates, Screen> Screens = new Dictionary<ScreenStates, Screen>();
+        public static ScreenStates CurrentState;
 
         public static string ConnectionString;
 
@@ -61,9 +61,9 @@ namespace PacMan
 
             ConnectionString = "Server=MichaelsLaptop; Database=PacManDatabase; Trusted_Connection=True";
 
-            CurrentState = States.Login;
+            CurrentState = ScreenStates.Login;
 
-            Screens.Add(States.Login, new LoginScreen(GraphicsDevice, Content));
+            Screens.Add(ScreenStates.Login, new LoginScreen(GraphicsDevice, Content));
             
             // TODO: use this.Content to load your game content here
         }

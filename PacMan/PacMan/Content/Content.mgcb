@@ -255,6 +255,12 @@
 /processorParam:TextureFormat=Color
 /build:pacmanspritesheet.png
 
+#begin pacmanwakawaka.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:pacmanwakawaka.wav
+
 #begin pinky.png
 /importer:TextureImporter
 /processor:TextureProcessor

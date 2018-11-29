@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MichaelLibrary;
 using Microsoft.Xna.Framework;
@@ -27,13 +28,12 @@ namespace PacMan
 
         Graph Map;
         Graph BlinkyMap;
-
-
+        
         List<BaseGameSprite> Walls = new List<BaseGameSprite>();
 
         List<BaseGameSprite> food;
 
-        List<BaseGameSprite> Hearts = new List<BaseGameSprite>();
+        List<Heart> Hearts = new List<Heart>();
 
         List<BaseGameSprite> PowerUps = new List<BaseGameSprite>();
         
@@ -114,7 +114,7 @@ namespace PacMan
                 {
                     if (Hearts.Count < 3)
                     {
-                        Hearts.Add(new BaseGameSprite(heartTexture, new Vector2(x, 0), Color.White, Vector2.One));
+                        Hearts.Add(new Heart(heartTexture, new Vector2(x, 0), Color.White, Vector2.One));
                     }
                     Walls.Add(new BaseGameSprite(square, new Vector2(x, y), Color.Black, Vector2.One));
                     continue;
@@ -215,6 +215,29 @@ namespace PacMan
 
         public override void Update(GameTime gameTime)
         {
+            bool cantUpdate = false;
+
+            for(int i = 0; i < Hearts.Count; i++)
+            {
+                Hearts[i].Update(gameTime);
+                cantUpdate |= Hearts[i].ShouldFlash;
+                if(Hearts[i].ShouldBeRemoved)
+                {
+                    Hearts.Remove(Hearts[i]);
+                    i--;
+                }
+            }
+
+            #region LoseStatement
+            if (Hearts.Count == 0)
+            {
+                Game1.CurrentUserData.Money += (int)(((float)food.Count / originalFoodCount) * 100);
+                Game1.CurrentState = ScreenStates.End;
+                Game1.DidWin = false;
+                Game1.Screens.Add(ScreenStates.End, new EndScreen(Graphics, Content));
+            }
+            #endregion
+
             for (int i = 0; i < food.Count; i++)
             {
                 if (food[i].HitBox.Contains(pac.Position))
@@ -227,9 +250,9 @@ namespace PacMan
             if (food.Count == 0)
             {
                 Game1.CurrentUserData.Money += 100 * Hearts.Count;
-                Game1.CurrentState = States.End;
+                Game1.CurrentState = ScreenStates.End;
                 Game1.DidWin = true;
-                Game1.Screens.Add(States.End, new EndScreen(Graphics, Content));
+                Game1.Screens.Add(ScreenStates.End, new EndScreen(Graphics, Content));
             }
 
             var keyboard = Keyboard.GetState();
@@ -252,30 +275,25 @@ namespace PacMan
                     } 
                 }
 
-                pac.Update(gameTime, Walls, Graphics);
-                blinky.Update(gameTime);
-                pinky.Update(gameTime);
-                Clyde.Update(gameTime);
-                Inky.Update(gameTime);
-
+                if (cantUpdate == false)
+                {
+                    pac.Update(gameTime, Walls, Graphics);
+                    blinky.Update(gameTime);
+                    pinky.Update(gameTime);
+                    Clyde.Update(gameTime);
+                    Inky.Update(gameTime);
+                }
 
                 foreach (var ghost in Ghosts)
                 {
                     if (pac.HitBox.Contains(ghost.HitBox) && !pac.IsPowerActivated)
                     {
+                        Hearts[Hearts.Count - 1].ShouldFlash = true;
                         
-                        Hearts.RemoveAt(Hearts.Count - 1);
-                        if (Hearts.Count == 0)
-                        {
-                            Game1.CurrentUserData.Money += (int)(((float)food.Count / originalFoodCount) * 100);
-                            Game1.CurrentState = States.End;
-                            Game1.DidWin = false;
-                            Game1.Screens.Add(States.End, new EndScreen(Graphics, Content));
-                        }
-
                         shouldStart = false;
 
                         pac.Position = new Vector2(120, 40);
+                        pac.Direction = Directions.None;
                         pinky.Position = new Vector2(400, 360);
                         Clyde.Position = new Vector2(440, 360);
                         blinky.Position = new Vector2(480, 360);
@@ -301,7 +319,7 @@ namespace PacMan
             }
             base.Update(gameTime);
         }
-
+        
         public override void Draw(SpriteBatch spriteBatch)
         {
             pac.Draw(spriteBatch);

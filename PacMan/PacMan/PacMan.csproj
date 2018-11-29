@@ -54,6 +54,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameScreen.cs" />
     <Compile Include="Graph.cs" />
+    <Compile Include="Heart.cs" />
     <Compile Include="Inky.cs" />
     <Compile Include="LoginScreen.cs" />
     <Compile Include="MinHeapTree.cs" />

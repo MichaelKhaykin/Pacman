@@ -15,11 +15,17 @@ namespace PacMan
         None
     }
 
-    public enum States
+    public enum ScreenStates
     {
         Login,
         SkinSelection,
         Play,
         End
+    }
+
+    public enum HeartStates
+    {
+        Show,
+        Hide
     }
 }

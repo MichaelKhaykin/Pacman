@@ -40,6 +40,8 @@ namespace PacMan
 
         protected bool HasElapsedTimePassed = false;
 
+        public bool IsVisible = true;
+
         public BaseGameSprite(Texture2D texture, Vector2 position, Color color, Vector2 scale)
         {
             Origin = Vector2.Zero;
@@ -75,7 +77,10 @@ namespace PacMan
 
         public virtual void Draw(SpriteBatch sb)
         {
-            sb.Draw(Texture, Position, null, Color, Rotation, Origin, Scale, SpriteEffects.None, 0f);
+            if (IsVisible)
+            {
+                sb.Draw(Texture, Position, null, Color, Rotation, Origin, Scale, SpriteEffects.None, 0f);
+            }
         }
     }
 }

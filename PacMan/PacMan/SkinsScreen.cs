@@ -91,7 +91,7 @@ namespace PacMan
                 int offsetX = width / 2;
                 int offsetY = height / 2;
                 Skins[i].HitBox = new Rectangle((int)(Skins[i].Position.X - offsetX), (int)(Skins[i].Position.Y - offsetY), (int)(width * Skins[i].Scale.X), (int)(height * Skins[i].Scale.Y));
-                Skins[i].SkinID = i + 1;
+                Skins[i].SkinID = i;
             }
 
             SqlConnection connection = new SqlConnection(Game1.ConnectionString);
@@ -123,7 +123,7 @@ namespace PacMan
             var pacManTexture = Content.Load<Texture2D>("pacmanspritesheet");
             
             //120, 40, scale 1
-            GameScreen.pac = new Pacman(pacManTexture, new Vector2(400, 150), Color.Yellow, Vector2.One * 5, animateFrameTime);
+            GameScreen.pac = new Pacman(pacManTexture, new Vector2(400, 150), Color.White, Vector2.One * 5, animateFrameTime, Content);
         }
 
         public override void Update(GameTime gameTime)
@@ -141,6 +141,8 @@ namespace PacMan
                 {
                     BuyButton.IsVisible = !skin.IsUnlocked;
 
+                    currSkinClicked = skin;
+
                     GameScreen.pac.effect = skin.Effect;
                     GameScreen.pac.AppliedSkin = skin.AppliedSkin;
                 }
@@ -149,8 +151,18 @@ namespace PacMan
 
             if (goToGameButton.IsClicked(Game1.Mouse) && !goToGameButton.IsClicked(Game1.OldMouse))
             {
-                Game1.CurrentState = States.Play;
-                Game1.Screens.Add(States.Play, new GameScreen(Graphics, Content));
+                if(currSkinClicked == null)
+                {
+                    Game1.CurrentState = ScreenStates.Play;
+                    Game1.Screens.Add(ScreenStates.Play, new GameScreen(Graphics, Content));
+                    return;
+                }
+                if (!currSkinClicked.IsUnlocked)
+                {
+                    return;
+                }
+                Game1.CurrentState = ScreenStates.Play;
+                Game1.Screens.Add(ScreenStates.Play, new GameScreen(Graphics, Content));
             }
 
             if (BuyButton.IsClicked(Game1.Mouse) && !BuyButton.IsClicked(Game1.OldMouse))
