@@ -18,6 +18,7 @@ namespace PacMan
         Button CreateButton;
         Button LoginButton;
         Button PlayButton;
+        Button MakeMapButton;
 
         TextBox UsernameBox;
         TextBox PasswordBox;
@@ -37,24 +38,29 @@ namespace PacMan
             font = Content.Load<SpriteFont>("Font");
             SpriteFont bigFont = Content.Load<SpriteFont>("BigFont");
 
-            UsernameLabel = new TextLabel(new Vector2(460, 170), Color.Black, "Username:", font);
-            PasswordLabel = new TextLabel(new Vector2(460, 370), Color.Black, "Password:", font);
+            UsernameLabel = new TextLabel(new Vector2(460, 140), Color.Black, "Username:", font);
+            PasswordLabel = new TextLabel(new Vector2(460, 340), Color.Black, "Password:", font);
 
-            UsernameBox = new TextBox(Graphics, new Rectangle(200, 200, 600, 0), font, Color.Black, Color.White, Color.Red, false, false);
-            PasswordBox = new TextBox(Graphics, new Rectangle(200, 400, 600, 0), font, Color.Black, Color.White, Color.Red, true, false);
+            UsernameBox = new TextBox(Graphics, new Rectangle(200, 170, 600, 0), font, Color.Black, Color.White, Color.Red, false, false);
+            PasswordBox = new TextBox(Graphics, new Rectangle(200, 370, 600, 0), font, Color.Black, Color.White, Color.Red, true, false);
 
             ResponseLabel = new TextLabel(new Vector2(100, 100), Color.Black, "", bigFont);
             ResponseLabel.Rotation = MathHelper.ToRadians(90);
 
             var createButtonTexture = Content.Load<Texture2D>("CreateAnAccountButton");
             var scale = 0.5f;
-            CreateButton = new Button(createButtonTexture, new Vector2(500, 500), Color.White, Vector2.One * scale, null);
+            CreateButton = new Button(createButtonTexture, new Vector2(500, 470), Color.White, Vector2.One * scale, null);
 
             var loginButtonTexture = Content.Load<Texture2D>("SignInButton");
-            LoginButton = new Button(loginButtonTexture, new Vector2(500, 600), Color.White, Vector2.One * scale, null);
+            LoginButton = new Button(loginButtonTexture, new Vector2(500, 570), Color.White, Vector2.One * scale, null);
 
             var playButtonTexture = Content.Load<Texture2D>("button_play");
-            PlayButton = new Button(playButtonTexture, new Vector2(500, 705), Color.White, Vector2.One * 0.3f, null);
+            PlayButton = new Button(playButtonTexture, new Vector2(500, 675), Color.White, Vector2.One * 0.3f, null);
+
+            //this texture is temporary need to find an actual button
+            var makeMapButtonTexture = Content.Load<Texture2D>("rocketLauncher2");
+            MakeMapButton = new Button(makeMapButtonTexture, new Vector2(500, 735), Color.White, Vector2.One * 0.1f, null);
+
 
             WelcomeLabel = new TextLabel(new Vector2(110, 0), Color.Black, "Welcome to PACMAN!", bigFont);
         }
@@ -63,6 +69,13 @@ namespace PacMan
         {
             UsernameBox.Update(gameTime);
             PasswordBox.Update(gameTime);
+            MakeMapButton.Update(gameTime);
+
+            if (MakeMapButton.IsClicked(Game1.Mouse) && !MakeMapButton.IsClicked(Game1.OldMouse) && canMoveOnToNextScreen)
+            {
+                Game1.CurrentState = ScreenStates.MakeMapScreen;
+                Game1.Screens.Add(ScreenStates.MakeMapScreen, new MakeMapScreen(Graphics, Content));
+            }
 
             if(CreateButton.IsClicked(Game1.Mouse) && !CreateButton.IsClicked(Game1.OldMouse))
             {
@@ -169,6 +182,7 @@ namespace PacMan
             PasswordLabel.Draw(spriteBatch);
             WelcomeLabel.Draw(spriteBatch);
             ResponseLabel.Draw(spriteBatch);
+            MakeMapButton.Draw(spriteBatch);
             base.Draw(spriteBatch);
         }
     }

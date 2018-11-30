@@ -19,6 +19,7 @@ namespace PacMan
     {
         Login,
         SkinSelection,
+        MakeMapScreen,
         Play,
         End
     }

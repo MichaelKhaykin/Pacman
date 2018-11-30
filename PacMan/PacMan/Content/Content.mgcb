@@ -171,6 +171,18 @@
 /processorParam:TextureFormat=Color
 /build:inky.png;blinky.png
 
+#begin LevelGrid.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:LevelGrid.png
+
 #begin Map.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -285,6 +297,18 @@
 /processorParam:TextureFormat=Color
 /build:RedHeart.png
 
+#begin rocketLauncher2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:rocketLauncher2.png
+
 #begin selectbutton.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -326,4 +350,16 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:skinEffect.fx
+
+#begin white1x1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:white1x1.png
 

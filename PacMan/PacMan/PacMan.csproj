@@ -57,6 +57,7 @@
     <Compile Include="Heart.cs" />
     <Compile Include="Inky.cs" />
     <Compile Include="LoginScreen.cs" />
+    <Compile Include="MakeMapScreen.cs" />
     <Compile Include="MinHeapTree.cs" />
     <Compile Include="Pacman.cs" />
     <Compile Include="PacManDirectSkin.cs" />
