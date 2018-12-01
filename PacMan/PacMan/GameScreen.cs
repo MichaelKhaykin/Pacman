@@ -101,8 +101,9 @@ namespace PacMan
             var poweruptexture = Content.Load<Texture2D>("pacmanpowerup");
 
             var wallColor = Color.Black;
-            var invalidFoodColor = new Color(237, 28, 36);
-            var foodColor = new Color(255, 242, 0);
+            var invalidFoodColor = Color.Red;
+            var powerUpColor = Color.Yellow;
+            var pacManStartColor = Color.Yellow;
 
             //add all verticies that aren't black
             for (int i = 0; i < colorData.Length; i++)
@@ -128,7 +129,7 @@ namespace PacMan
                     food.Add(new BaseGameSprite(foodTexture, new Vector2(x, y), Color.Yellow, Vector2.One));
                 }
 
-                if (colorData[i] == foodColor)
+                if (colorData[i] == powerUpColor)
                 {
                     PowerUps.Add(new BaseGameSprite(poweruptexture, new Vector2(x, y), Color.White, Vector2.One));
                 }
@@ -181,8 +182,7 @@ namespace PacMan
                 BlinkyMap.AddEdge(40, currentVertex, downLeftDiagonal);
                 BlinkyMap.AddEdge(40, currentVertex, downRightDiagonal);
             }
-
-
+            
             pinky = new Pinky(pinkyTexture, new Vector2(400, 360), Color.White, Vector2.One, Map);
             Clyde = new Clyde(clydeTexture, new Vector2(440, 360), Color.White, Vector2.One, Map);
             blinky = new Blinky(blinkyTexture, new Vector2(480, 360), Color.White, Vector2.One, BlinkyMap);

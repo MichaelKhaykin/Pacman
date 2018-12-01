@@ -26,6 +26,8 @@ namespace PacMan
 
         Dictionary<Color, int> OneTimeUse;
 
+        List<Sprite> PixelsToAdd;
+
         public MakeMapScreen(GraphicsDevice graphics, ContentManager content) : base(graphics, content)
         {
             pixel = new Texture2D(graphics, 1, 1);
@@ -33,13 +35,13 @@ namespace PacMan
 
             Buttons = new List<Button>();
             OneTimeUse = new Dictionary<Color, int>();
+            PixelsToAdd = new List<Sprite>();
 
             font = Content.Load<SpriteFont>("Font");
 
             var gridTexture = content.Load<Texture2D>("LevelGrid");
 
             Grid = new Sprite(gridTexture, new Vector2(500, 400), Color.White, Vector2.One * 16, null);
-            //Grid.Origin = new Vector2(gridTexture.Width/2, gridTexture.Height/2);
             
             var blank = Content.Load<Texture2D>("white1x1");
             
@@ -111,13 +113,6 @@ namespace PacMan
             
             if(checkForGrid)
             {
-                if(OneTimeUse.ContainsKey(currButtonClicked.Color))
-                {
-                    if(OneTimeUse[currButtonClicked.Color] == 1)
-                    {
-                        return;
-                    }
-                }
 
                 if (Grid.HitBox.Contains(Game1.Mouse.Position) && Game1.Mouse.LeftButton == ButtonState.Pressed)
                 {
@@ -133,11 +128,9 @@ namespace PacMan
                         {
                             //if it is a onetimeuse color being changed to white
                             //then we need to decrease the count in the dictionary
-                            if(OneTimeUse.ContainsKey(colorarray[i]) && currButtonClicked.Color == Color.White)
-                            {
-                                OneTimeUse[colorarray[i]]--;
-                            }
-                            colorarray[i] = currButtonClicked.Color;
+                            var xPos = (i % Grid.Texture.Width) * Grid.Scale.X + Grid.Position.X - Grid.ScaledWidth / 2;
+                            var yPos = (i / Grid.Texture.Width) * Grid.Scale.Y + Grid.Position.Y - Grid.ScaledHeight / 2;
+                            PixelsToAdd.Add(new Sprite(pixel, new Vector2(xPos, yPos), currButtonClicked.Color, Grid.Scale));
                             if(OneTimeUse.ContainsKey(currButtonClicked.Color))
                             {
                                 OneTimeUse[currButtonClicked.Color]++;
@@ -161,6 +154,12 @@ namespace PacMan
             foreach(var button in Buttons)
             {
                 button.Draw(spriteBatch);
+            }
+
+            foreach(var pixel in PixelsToAdd)
+            {
+                pixel.Origin = Vector2.Zero;
+                pixel.Draw(spriteBatch);
             }
 
             spriteBatch.DrawString(font, $"X:{GetGridCellPosition().Item1}, Y:{GetGridCellPosition().Item2}", new Vector2(200, 100), Color.Black);
