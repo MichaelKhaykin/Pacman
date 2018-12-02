@@ -24,9 +24,9 @@ namespace PacMan
         bool checkForGrid = false;
         Button currButtonClicked = null;
 
-        Dictionary<Color, int> OneTimeUse;
+        List<Sprite> Pixels;
 
-        List<Sprite> PixelsToAdd;
+        List<Color> OneTimeUseColors;
 
         public MakeMapScreen(GraphicsDevice graphics, ContentManager content) : base(graphics, content)
         {
@@ -34,8 +34,8 @@ namespace PacMan
             pixel.SetData(new[] { Color.White });
 
             Buttons = new List<Button>();
-            OneTimeUse = new Dictionary<Color, int>();
-            PixelsToAdd = new List<Sprite>();
+            Pixels = new List<Sprite>();
+            OneTimeUseColors = new List<Color>();
 
             font = Content.Load<SpriteFont>("Font");
 
@@ -73,11 +73,11 @@ namespace PacMan
             Buttons.Add(pinkyButton);
             Buttons.Add(orangeButton);
             
-            OneTimeUse.Add(Color.Yellow, 0);
-            OneTimeUse.Add(Color.Red, 0);
-            OneTimeUse.Add(Color.Blue, 0);
-            OneTimeUse.Add(Color.Orange, 0);
-            OneTimeUse.Add(Color.Pink, 0);
+            OneTimeUseColors.Add(Color.Yellow);
+            OneTimeUseColors.Add(Color.Red);
+            OneTimeUseColors.Add(Color.Blue);
+            OneTimeUseColors.Add(Color.Orange);
+            OneTimeUseColors.Add(Color.Pink);
         }
         
         public (int, int) GetGridCellPosition()
@@ -113,7 +113,6 @@ namespace PacMan
             
             if(checkForGrid)
             {
-
                 if (Grid.HitBox.Contains(Game1.Mouse.Position) && Game1.Mouse.LeftButton == ButtonState.Pressed)
                 {
                     var point = GetGridCellPosition();
@@ -130,11 +129,53 @@ namespace PacMan
                             //then we need to decrease the count in the dictionary
                             var xPos = (i % Grid.Texture.Width) * Grid.Scale.X + Grid.Position.X - Grid.ScaledWidth / 2;
                             var yPos = (i / Grid.Texture.Width) * Grid.Scale.Y + Grid.Position.Y - Grid.ScaledHeight / 2;
-                            PixelsToAdd.Add(new Sprite(pixel, new Vector2(xPos, yPos), currButtonClicked.Color, Grid.Scale));
-                            if(OneTimeUse.ContainsKey(currButtonClicked.Color))
+
+                            foreach (var oneTimeUseColor in OneTimeUseColors)
                             {
-                                OneTimeUse[currButtonClicked.Color]++;
+                                if (currButtonClicked.Color != oneTimeUseColor)
+                                {
+                                    for (int a = 0; a < Pixels.Count; a++)
+                                    {
+                                        var pixel = Pixels[a];
+
+                                        if (pixel.Color == currButtonClicked.Color) continue;
+
+                                        if (pixel.X == xPos && pixel.Y == yPos)
+                                        {
+                                            Pixels.Remove(pixel);
+                                            a--;
+                                            return;
+                                        }
+                                    }
+                                }
                             }
+
+                            Pixels.Add(new Sprite(pixel, new Vector2(xPos, yPos), currButtonClicked.Color, Grid.Scale));
+                            Dictionary<Color, Wrapper> containedColorsAndCount = new Dictionary<Color, Wrapper>();
+
+                            for (int h = 0; h < OneTimeUseColors.Count; h++)
+                            {
+                                containedColorsAndCount.Add(OneTimeUseColors[h], new Wrapper());
+                            }
+
+                            for (int x = 0; x < Pixels.Count; x++)
+                            {
+                                if(OneTimeUseColors.Contains(Pixels[x].Color))
+                                {
+                                    containedColorsAndCount[Pixels[x].Color].Count++;
+                                    containedColorsAndCount[Pixels[x].Color].Index = x;
+                                }
+                            }
+                            
+                            foreach(var key in containedColorsAndCount.Keys)
+                            {
+                                var tuple = containedColorsAndCount[key];
+                                if(tuple.Count > 1)
+                                {
+                                    Pixels.RemoveAt(tuple.Index);
+                                }
+                            }
+                            
                         }
                     }
 
@@ -156,7 +197,7 @@ namespace PacMan
                 button.Draw(spriteBatch);
             }
 
-            foreach(var pixel in PixelsToAdd)
+            foreach(var pixel in Pixels)
             {
                 pixel.Origin = Vector2.Zero;
                 pixel.Draw(spriteBatch);

@@ -68,6 +68,7 @@
     <Compile Include="SkinsScreen.cs" />
     <Compile Include="UserData.cs" />
     <Compile Include="Vertex.cs" />
+    <Compile Include="Wrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MichaelLibrary">
